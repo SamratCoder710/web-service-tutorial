@@ -4,6 +4,8 @@ import com.coder.sanam.dao.UserService;
 import com.coder.sanam.exception.UserNotFoundException;
 import com.coder.sanam.model.User;
 import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +22,22 @@ public class UserResource {
     }
 
 
-    @GetMapping(value = "/users" , produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(value = "/users" )
     public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{userId}")
-    public User getUserById(@PathVariable int userId){
+    public EntityModel<User> getUserById(@PathVariable int userId){
         User foundUser = userService.findOne(userId);
         if(foundUser == null) {
             throw new UserNotFoundException("id:"+userId);
         }
-        return foundUser;
+
+        EntityModel<User> userEntityModel = EntityModel.of(foundUser);
+        WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsers());
+        userEntityModel.add(webMvcLinkBuilder.withRel("all-users"));
+        return userEntityModel;
     }
 
     @PostMapping("/users")
