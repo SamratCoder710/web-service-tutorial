@@ -31,13 +31,17 @@ public class UserResource {
         if(foundUser == null) {
             throw new UserNotFoundException("id:"+userId);
         }
-
         return foundUser;
     }
 
     @PostMapping("/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         return userService.createUser(user);
+    }
+
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<Object> updateUser(@Valid @RequestBody User userToBeUpdated, @PathVariable int userId){
+        return userService.updateUser(userId,userToBeUpdated);
     }
 
     @DeleteMapping("/users/{userId}")

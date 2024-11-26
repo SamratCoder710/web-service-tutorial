@@ -27,15 +27,15 @@ public class WebConfig implements WebMvcConfigurer {
 //                new PathExtensionContentNegotiationStrategy(mediaTypes);
 //        pathExtensionStrategy.setUseRegisteredExtensionsOnly(true);
 
-        configurer.defaultContentType(MediaType.APPLICATION_JSON)
-                .mediaTypes(mediaTypes)
-                .favorPathExtension(true);
+//        configurer.defaultContentType(MediaType.APPLICATION_JSON)
+//                .mediaTypes(mediaTypes)
+//                .favorPathExtension(true);
 
     }
 
     @Override
     public  void configurePathMatch(PathMatchConfigurer configurer){
-        configurer.setUseSuffixPatternMatch(true);
-        configurer.setUseRegisteredSuffixPatternMatch(true);
+//        configurer.setUseSuffixPatternMatch(true);
+//        configurer.setUseRegisteredSuffixPatternMatch(true);
     }
 }

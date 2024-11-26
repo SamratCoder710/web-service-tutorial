@@ -1,6 +1,9 @@
 package com.coder.sanam.dao;
 
+import com.coder.sanam.exception.UserNotFoundException;
 import com.coder.sanam.model.User;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -8,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -24,7 +28,7 @@ public class UserService {
     }
 
     public List<User> getAllUsers(){
-        return users;
+        return users.stream().sorted(Comparator.comparingInt(User::getId)).toList();
     }
 
     public User findOne(int id){
@@ -41,6 +45,18 @@ public class UserService {
 
     public void deleteUser(int id) {
         users.removeIf(user -> user.getId().equals(id));
+    }
+
+    public ResponseEntity<Object> updateUser(int userId, @Valid User userToBeUpdated) {
+        User existingUser = findOne(userId);
+        if(existingUser == null) throw new UserNotFoundException("User not found :Id "+userId);
+
+        users.remove(existingUser);
+        existingUser.setName(userToBeUpdated.getName());
+        existingUser.setBirthDate(userToBeUpdated.getBirthDate());
+        users.add(existingUser);
+
+        return new ResponseEntity<>(existingUser, HttpStatus.OK);
     }
 }
 
