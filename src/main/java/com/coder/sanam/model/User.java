@@ -1,21 +1,28 @@
 package com.coder.sanam.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
-    @Size(min = 3, max = 10, message = "Character length should be between 3 and 10")
+    @Size(min = 3, max = 30, message = "Character length should be between 3 and 30")
     private String name;
 
     @Past(message = "birthDate should be a past date")
     private LocalDate birthDate;
 
-    public User(Integer id, String name, LocalDate birthDate) {
-        this.id = id;
+    public User() {
+    }
+
+    public User(String name, LocalDate birthDate) {
         this.name = name;
         this.birthDate = birthDate;
     }
