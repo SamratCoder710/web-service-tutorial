@@ -1,7 +1,9 @@
 package com.coder.sanam.dao;
 
 import com.coder.sanam.exception.UserNotFoundException;
+import com.coder.sanam.model.Post;
 import com.coder.sanam.model.User;
+import com.coder.sanam.repository.PostRepository;
 import com.coder.sanam.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     public List<User> getAllUsers(){
         return userRepository.findAll().stream().sorted(Comparator.comparingInt(User::getId)).toList();
@@ -55,6 +60,22 @@ public class UserService {
         User updatedUser = userRepository.save(existingUser);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> getAllPostOfaUser(int userId) {
+        User existingUser = findOne(userId);
+        if(existingUser == null) throw new UserNotFoundException("User not found :Id "+userId);
+        return new ResponseEntity<>(existingUser.getPosts(),HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> savePostOfaUser(int userId, Post post) {
+        User existingUser = findOne(userId);
+        if(existingUser == null) throw new UserNotFoundException("User not found :Id "+userId);
+        post.setUser(existingUser);
+        Post savedPost = postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedPost.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 }
 

@@ -2,6 +2,7 @@ package com.coder.sanam.controller;
 
 import com.coder.sanam.dao.UserService;
 import com.coder.sanam.exception.UserNotFoundException;
+import com.coder.sanam.model.Post;
 import com.coder.sanam.model.User;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
@@ -37,6 +38,7 @@ public class UserResource {
         EntityModel<User> userEntityModel = EntityModel.of(foundUser);
         WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsers());
         userEntityModel.add(webMvcLinkBuilder.withRel("all-users"));
+        userEntityModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUserById(userId)).withSelfRel());
         return userEntityModel;
     }
 
@@ -54,6 +56,18 @@ public class UserResource {
     public void deleteUserById(@PathVariable int userId){
         userService.deleteUser(userId);
     }
+
+    @GetMapping("/users/{userId}/posts")
+    public ResponseEntity<Object> getAllPostOfaUser(@PathVariable int userId){
+        return userService.getAllPostOfaUser(userId);
+    }
+
+    @PostMapping("/users/{userId}/posts")
+    public ResponseEntity<Object> savePostOfaUser(@PathVariable int userId, @RequestBody Post post){
+        return userService.savePostOfaUser(userId,post);
+    }
+
+
 
 
 }
